@@ -18,8 +18,15 @@
             "pages": ["index"]
           },
           {
+            "group": "Working With Phone Numbers",
+            "pages": ["phone-number-guide"]
+          },
+          {
             "group": "Integration Guides",
-            "pages": ["integration-guides/calcom/calcom"]
+            "pages": [
+              "integration-guides/calcom/calcom",
+              "integration-guides/calendly/calendly"
+            ]
           }
         ]
       },
