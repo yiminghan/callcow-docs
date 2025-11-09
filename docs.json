@@ -24,6 +24,7 @@
           {
             "group": "Integration Guides",
             "pages": [
+              "integration-guides/zapier/zapier",
               "integration-guides/calcom/calcom",
               "integration-guides/calendly/calendly"
             ]
