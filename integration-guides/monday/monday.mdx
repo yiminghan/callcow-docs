@@ -32,7 +32,7 @@ It is normal to pass in extra call context to your calls. When creating your int
 
 ![Extra Call Context](monday_extra_call_context.png)
 
-# Trigger call workflow when a row is created.
+# Trigger call workflow when a row is created
 
 The most common way for Monday CRM integration to be used is to trigger a call when a new row is added.
 
@@ -42,7 +42,21 @@ Go to **Run Workflow** section of the workflow you want to trigger, and copy the
 
 ![Run Workflow](monday_run_workflow.png)
 
-Follow the instructions to add the webhook to your Monday CRM board.
+Follow the instructions to copy the webhook link, then go to your board, click **Integrate** -> **More Integrations**
+
+![More Integrations](monday_more_integrations.png)
+
+![More Integrations - Webhooks](monday_webhook.png)
+
+![More Integrations - Webhooks 2](monday_webhook_2.png)
+
+Create a webhook for **When an item is created, send a webhook**.
+
+Copy the webhook link into the webhook.
+
+Create the automation. You should see something like this:
+
+![Webhooks Finish Screen](monday_finish.png)
 
 ## Custom Setup
 
