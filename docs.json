@@ -15,7 +15,7 @@
         "groups": [
           {
             "group": "Getting started",
-            "pages": ["index"]
+            "pages": ["index", "clone-voice/voice-clone"]
           },
           {
             "group": "Working With Phone Numbers",
