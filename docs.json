@@ -19,7 +19,7 @@
           },
           {
             "group": "Working With Phone Numbers",
-            "pages": ["phone-number-guide"]
+            "pages": ["phone-number-guide", "voicemail-transfer/voicemail-transfer", "transfer-to-human/transfer-to-human"]
           },
           {
             "group": "Integration Guides",
