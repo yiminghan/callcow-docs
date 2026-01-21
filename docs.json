@@ -18,6 +18,10 @@
             "pages": ["index", "clone-voice/voice-clone"]
           },
           {
+            "group": "Workflow Guides",
+            "pages": ["workflow-guides/custom-workflow"]
+          },
+          {
             "group": "Working With Phone Numbers",
             "pages": ["phone-number-guide", "voicemail-transfer/voicemail-transfer", "transfer-to-human/transfer-to-human"]
           },
@@ -57,6 +61,11 @@
           "anchor": "App Dashboard",
           "href": "https://www.callcow.ai/dashboard",
           "icon": "phone"
+        },
+        {
+          "anchor": "Roadmap & Feedbacks",
+          "href": "https://callcow.userjot.com/board/all",
+          "icon": "road"
         }
       ]
     }
