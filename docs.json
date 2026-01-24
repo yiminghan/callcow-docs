@@ -38,6 +38,12 @@
               "integration-guides/calendly/calendly",
               "integration-guides/monday/monday"
             ]
+          },
+          {
+            "group": "Organization Support",
+            "pages": [
+"white-labeling/white-labeling"
+            ]
           }
         ]
       },
