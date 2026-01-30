@@ -1,0 +1,97 @@
+---
+title: "Webhooks"
+---
+
+## Overview
+
+Webhooks allow you to receive real-time notifications when calls are completed. When a call ends, CallCow will send a POST request to your configured webhook URL with detailed information about the call.
+
+## Setting Up Webhooks
+
+You can create a webhook in the **Integration** tab.  Once you have created a webhook, you can update your custom workflow metadata to use the webhook.
+
+## Payload Format
+
+When a call completes, you'll receive a POST request with a JSON payload containing the following fields:
+
+```json
+{
+  "call_id": "e0f4c895-e3ea-416a-a98a-578e82868473",
+  "workflow_id": "008bda4d-b467-4f55-a8ed-803b3d1d69d5",
+  "workflow_name": "calendly test (Copy)",
+  "phone_number_from": "browser",
+  "phone_number_to": "browser",
+  "call_status": "not_picked_up",
+  "call_summary": "User and assistant exchange greetings, with assistant introducing themselves as Alex.",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Hi"
+    },
+    {
+      "role": "assistant",
+      "content": "\nHello. Thank you for answering. My name is Alex."
+    },
+    {
+      "role": "user",
+      "content": "Hello?"
+    },
+    {
+      "role": "assistant",
+      "content": "Yes yes"
+    }
+  ],
+  "context": "{\"name\": \"YiMing HAN\", \"email\": \"hanyiming1995@gmail.com\", \"number\": \"+14165551234\"}",
+  "created_at": "2026-01-30T14:48:36.371886"
+}
+```
+
+## Field Reference
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `call_id` | string | Unique identifier for the call |
+| `workflow_id` | string | ID of the workflow that handled the call |
+| `workflow_name` | string | Name of the workflow |
+| `phone_number_from` | string | The originating phone number (or `browser` for web calls) |
+| `phone_number_to` | string | The destination phone number (or `browser` for web calls) |
+| `call_status` | string | Status of the call (e.g., `success`, `not_picked_up`) |
+| `call_summary` | string | AI-generated summary of the call |
+| `messages` | array | Full conversation transcript with `role` and `content` for each message |
+| `context` | string | JSON string containing custom context data passed to the workflow (e.g., name, email, phone number) |
+| `created_at` | string | ISO 8601 timestamp when the call was created |
+
+## Handling Webhooks
+
+Your webhook endpoint should:
+
+1. Accept POST requests with JSON content
+2. Respond with a 2xx status code to acknowledge receipt
+3. Process the webhook asynchronously if needed to avoid timeouts
+
+### Example Handler (Node.js)
+
+```javascript
+app.post('/webhook/callcow', (req, res) => {
+  const payload = req.body;
+
+  console.log('Call completed:', payload.call_id);
+  console.log('Status:', payload.call_status);
+  console.log('Summary:', payload.call_summary);
+
+  // Parse context if needed
+  const context = JSON.parse(payload.context);
+  console.log('Caller:', context.name);
+
+  // Process the webhook data
+  // e.g., update your CRM, send notifications, etc.
+
+  res.status(200).send('OK');
+});
+```
+
+## Best Practices
+
+- **Handle duplicates**: Implement idempotency using the `call_id` field to handle potential duplicate deliveries
+- **Respond quickly**: Return a 2xx response promptly and process data asynchronously
+- **Debug and Verify**: Webhook works on browser calls as well.  So as soon as you updated your webhook you can trigger a call in your browser test it.
