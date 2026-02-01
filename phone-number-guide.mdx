@@ -2,4 +2,46 @@
 title: "Phone Number Guide"
 ---
 
-In most inbound cases, the AI takes the call when 
+CallCow uses Twilio to handle phone calls. To connect your own Twilio account, you'll need to get a phone number and API credentials.
+
+## Getting a Twilio Phone Number
+
+1. Sign up for a Twilio account at [twilio.com](https://www.twilio.com)
+
+2. Once logged in, go to **Phone Numbers** > **Manage** > **Buy a number**
+
+3. Search for a number by country, area code, or capabilities (Voice, SMS)
+
+4. Click **Buy** to purchase the number
+
+5. Copy the phone number and add it to your CallCow workflow settings
+
+## Getting Your Twilio API Credentials
+
+1. Log in to the [Twilio Console](https://console.twilio.com)
+
+2. On the dashboard, locate your **Account SID** and **Auth Token**
+
+3. Click the eye icon to reveal your Auth Token
+
+4. Copy both the Account SID and Auth Token
+
+5. Paste these credentials into CallCow's Twilio integration settings
+
+**Note:** Keep your Auth Token secret. Never share it publicly or commit it to version control.
+
+## Concurrent Calls Limit
+
+CallCow uses Twilio for phone calls. By default, Twilio accounts have the following limits:
+
+| Account Type | Calls Per Second (CPS) | Concurrent Calls |
+|--------------|------------------------|------------------|
+| Trial | 1 CPS | 4 |
+| Upgraded (without Business Profile) | 1 CPS | Limited |
+| Upgraded (with Business Profile) | Configurable | Unlimited |
+
+**Key points:**
+- CPS limits only apply to outbound API calls, not inbound calls
+- If you need higher throughput, you can increase your CPS limit in the [Twilio Console](https://console.twilio.com) Voice Settings page (requires an approved Business Profile)
+
+For more details, see [Twilio's documentation on call limits](https://support.twilio.com/hc/en-us/articles/223180028-How-Fast-Can-I-Place-or-Receive-Phone-Calls-with-Twilio).
