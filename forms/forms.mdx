@@ -1,0 +1,47 @@
+---
+title: "Forms"
+---
+
+Forms let you define structured data collection templates that your AI agent fills out during calls. Each form has typed fields (like phone, email, text, number, select, or multiselect), and the collected data is stored with the call record.
+
+# Creating a Form
+
+1. Navigate to the **/forms** page in your dashboard.
+2. Click **Create Form**.
+3. Give your form a title (e.g., "Lead Qualification").
+4. Add fields — for each field, configure:
+   - **Label** — the field name (e.g., "Company Name")
+   - **Type** — one of the supported field types below
+   - **Required** — whether the AI must collect this field during the call
+   - **Options** — for select and multiselect types, define the available choices
+
+# Field Types
+
+| Type | Description |
+| --- | --- |
+| Text | Free-form text input |
+| Number | Numeric values |
+| Email | Email addresses |
+| Phone | Phone numbers |
+| Select | Single choice from a list of options |
+| Multi-select | Multiple choices from a list of options |
+
+For **Select** and **Multi-select** fields, you'll need to define the available options when creating the field.
+
+# Using Forms in Workflows
+
+To use a form during a call, add a **Form** state node in the workflow builder:
+
+1. Open your workflow in the **/workflows** page.
+2. Add a new state and select the **Form** type.
+3. Choose an existing form or create a new one inline.
+
+When the call reaches the form state, the AI agent will conversationally collect the required information from the caller based on your field definitions.
+
+# Viewing Collected Data
+
+After a call completes, the filled form data appears on the call detail page. Navigate to **/calls** and select a call to view the collected responses.
+
+# Post-Call Integrations
+
+Form data is included in post-call webhook payloads, so you can send collected data to your CRM, spreadsheet, or any other system. See the [Webhooks documentation](/webhooks/webhook) for setup details.

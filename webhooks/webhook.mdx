@@ -42,6 +42,15 @@ When a call completes, you'll receive a POST request with a JSON payload contain
     }
   ],
   "context": "{\"name\": \"YiMing HAN\", \"email\": \"hanyiming1995@gmail.com\", \"number\": \"+14165551234\"}",
+  "form_fills": [
+    {
+      "title": "Form Title",
+      "values": {
+        "Email": "xxx@gmail.com",
+        "Phone Number": "+1416xxx1234",
+        "Options": null
+      }
+    }],
   "created_at": "2026-01-30T14:48:36.371886"
 }
 ```
@@ -59,6 +68,7 @@ When a call completes, you'll receive a POST request with a JSON payload contain
 | `call_summary` | string | AI-generated summary of the call |
 | `messages` | array | Full conversation transcript with `role` and `content` for each message |
 | `context` | string | JSON string containing custom context data passed to the workflow (e.g., name, email, phone number) |
+| `form_fills` | array | Array of forms filled out during the call, where each entry contains a `title` (string) and `values` (object mapping field names to values or null).  This will only be included if you have forms in your workflow. |
 | `created_at` | string | ISO 8601 timestamp when the call was created |
 
 ## Handling Webhooks
