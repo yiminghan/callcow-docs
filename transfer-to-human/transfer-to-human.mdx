@@ -16,9 +16,31 @@ First, create an integration for call transfer, and enter the number you which t
 
 ![Call Transfer Integrations](call-transfer-integrations.png)
 
-Once this is save, you can update them in custom workflows via **Edit Metadata** or in basic workflows under the **Call Transfer** section:
+Once this is saved, you can update them in custom workflows via **Edit Metadata** or in basic workflows under the **Call Transfer** section:
 
 ![Custom Workflow](custom-workflows.png)
 ![Basic Workflow](basic-workflow.png)
+
+## Dynamic Transfer URL
+
+If you need the transfer destination to change based on who is calling (e.g. routing to different departments or agents), you can set an optional **Dynamic Transfer URL** on the call transfer integration.
+
+When configured, the agent will `POST` to your URL at the moment of transfer with the caller's phone number:
+
+```json
+{
+  "number": "+15551234567"
+}
+```
+
+Your endpoint should return a JSON response with the destination number:
+
+```json
+{
+  "transferNumber": "+15559876543"
+}
+```
+
+If the request fails or does not return a valid `transferNumber`, the agent will fall back to the static **Transfer Phone Number** you configured above.
 
 
