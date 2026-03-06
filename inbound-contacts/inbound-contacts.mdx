@@ -1,0 +1,42 @@
+---
+title: "Inbound Contacts"
+---
+
+Inbound contacts are people who have called or messaged your agent.  Any contacts that have shown any interest will be saved to inbound contacts.
+
+
+## Contact Details
+
+Each inbound contact stores:
+
+- **Phone number** — the caller's phone number (always present)
+- **Name** — collected from calls or manually added
+- **Email** — collected from forms or manually added
+- **Notes** — free-form notes you can add to a contact
+
+## Preferred Number
+
+The **preferred number** is the default "from" number used when creating new SMS threads with a contact or call with a contact.
+
+We automatically link one number to one contact so the contact associate the number and trust it more.
+
+A perferred number is automatically linked when the contact calls / texts a number for the first time.
+
+## Message Threads
+
+You can send and receive SMS messages with inbound contacts directly from CallCow.
+
+### Creating a Thread
+
+1. Open a contact from the **/contacts/inbound** page.
+2. Click **New Thread** to start a conversation.
+3. Select a "from" number (the preferred number is pre-selected if one is set).
+4. Type your message and send.
+
+### Viewing Threads
+
+Each thread shows the full message history between you and the contact on a specific number. You can have multiple threads with the same contact using different phone numbers.
+
+### Sending Messages
+
+Type a message in the thread view and click send. Messages are delivered via Twilio using the thread's "from" number.

@@ -26,6 +26,10 @@
             "pages": ["forms/forms"]
           },
           {
+            "group": "Inbound Contacts",
+            "pages": ["inbound-contacts/inbound-contacts"]
+          },
+          {
             "group": "Working With Phone Numbers",
             "pages": ["phone-number-guide", "voicemail-transfer/voicemail-transfer", "transfer-to-human/transfer-to-human"]
           },
