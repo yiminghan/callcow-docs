@@ -30,6 +30,24 @@ CallCow uses Twilio to handle phone calls. To connect your own Twilio account, y
 
 **Note:** Keep your Auth Token secret. Never share it publicly or commit it to version control.
 
+## Setting Up SMS
+
+To enable SMS capabilities for your Twilio phone number, you need to configure a TwiML App and connect it to your number.
+
+1. In the [Twilio Console](https://console.twilio.com), go to **Messaging** > **Services** and click **Create Messaging Service**
+
+2. Give your service a name and click **Create Messaging Service**
+
+3. Under **Sender Pool**, click **Add Senders** and add your Twilio phone number
+
+4. In the **Integration** step, select **Send a webhook** and enter your CallCow webhook URL as the **Request URL**
+
+5. Complete the setup and click **Save**
+
+6. Back in CallCow, enable SMS for your workflow and select the phone number you configured
+
+**Note:** If you're on a Twilio trial account, you can only send SMS to verified phone numbers. Upgrade your account to send SMS to any number.
+
 ## Concurrent Calls Limit
 
 CallCow uses Twilio for phone calls. By default, Twilio accounts have the following limits:
