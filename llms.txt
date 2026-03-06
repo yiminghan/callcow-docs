@@ -1,0 +1,332 @@
+# CallCow
+
+> CallCow is an AI phone call platform that lets you build, automate, and manage voice workflows. It supports outbound and inbound calls, meeting booking, CRM integrations, and more.
+
+- [App Dashboard](https://www.callcow.ai/dashboard)
+- [Roadmap & Feedback](https://callcow.userjot.com/board/all)
+- [Support](mailto:yiming@callcow.ai)
+
+## Getting Started
+
+CallCow provides an API and integrations for automating voice workflows. For custom Zapier and n8n workflows, book a meeting at https://www.callcow.ai/login-beta.
+
+## Voice Cloning
+
+Clone your voice in two steps:
+
+1. Go to the Voice tab in the sidebar.
+2. Record a 30-second audio snippet and clone your voice.
+
+Your cloned voice can then be used across all workflows. Only the 30-second snippet is stored; actual call audio is not retained.
+
+## Custom Workflows
+
+CallCow offers a workflow builder for creating custom AI call workflows. A video guide is available at https://www.youtube.com/embed/RGvOXRmI6sE. For setup help, book a meeting at http://callcow.ai/schedule-custom.
+
+## Forms
+
+Forms define structured data collection templates that the AI agent fills out during calls. Each form has typed fields, and collected data is stored with the call record.
+
+### Field Types
+
+- **Text** - Free-form text input
+- **Number** - Numeric values
+- **Email** - Email addresses
+- **Phone** - Phone numbers
+- **Select** - Single choice from a list of options
+- **Multi-select** - Multiple choices from a list of options
+
+### Using Forms
+
+1. Create forms at the /forms page in the dashboard.
+2. Add a Form state node in the workflow builder to use during calls.
+3. The AI agent conversationally collects the required information.
+4. Filled form data appears on the call detail page under /calls.
+5. Form data is included in post-call webhook payloads.
+
+## Inbound Contacts
+
+Inbound contacts are people who have called or messaged your agent. Any contacts that have shown interest are saved automatically.
+
+Each contact stores: phone number, name, email, and notes.
+
+### Preferred Number
+
+The preferred number is the default "from" number used when creating new SMS threads or calls with a contact. It is automatically linked when the contact calls or texts a number for the first time.
+
+### SMS Message Threads
+
+You can send and receive SMS messages with inbound contacts directly from CallCow. Open a contact from /contacts/inbound, click New Thread, select a "from" number, and send messages. Each thread shows full message history on a specific number.
+
+## Phone Number Guide
+
+CallCow uses Twilio to handle phone calls. You need a Twilio account with a phone number and API credentials (Account SID and Auth Token).
+
+### Getting a Twilio Phone Number
+
+1. Sign up at twilio.com.
+2. Go to Phone Numbers > Manage > Buy a number.
+3. Search by country, area code, or capabilities (Voice, SMS).
+4. Purchase and copy the number to CallCow workflow settings.
+
+### Twilio API Credentials
+
+Find your Account SID and Auth Token on the Twilio Console dashboard. Keep your Auth Token secret.
+
+### SMS Setup
+
+1. In Twilio Console, go to Messaging > Services and create a Messaging Service.
+2. Add your Twilio phone number to the Sender Pool.
+3. Set Send a webhook as the integration and enter your CallCow webhook URL.
+4. Enable SMS in CallCow for your workflow.
+
+Note: Twilio trial accounts can only send SMS to verified numbers.
+
+### Concurrent Calls Limit
+
+| Account Type | Calls Per Second | Concurrent Calls |
+|---|---|---|
+| Trial | 1 CPS | 4 |
+| Upgraded (without Business Profile) | 1 CPS | Limited |
+| Upgraded (with Business Profile) | Configurable | Unlimited |
+
+CPS limits only apply to outbound API calls, not inbound. See https://support.twilio.com/hc/en-us/articles/223180028 for details.
+
+## Voicemail Forwarding
+
+Instead of letting AI take 100% of inbound calls, voicemail forwarding lets AI handle calls only when you fail to pick up. Missed calls are forwarded to the AI agent instead of voicemail.
+
+Setup varies by carrier. See https://youtube.com/shorts/J7nBTLstdPU for a Rogers demo. For help with your provider, book at https://callcow.ai/schedule-custom.
+
+## Transfer to Human
+
+Set up call transfer to a specific number when the caller prefers to talk to a human.
+
+Requires a Primary Customer Profile in your Twilio account: https://www.twilio.com/docs/trust-hub/trusthub-rest-api/console-create-a-primary-customer-profile
+
+1. Create a call transfer integration and enter the transfer number.
+2. Update custom workflows via Edit Metadata or basic workflows under Call Transfer.
+
+### Dynamic Transfer URL
+
+For routing to different departments based on the caller, set a Dynamic Transfer URL on the integration. The agent POSTs the caller's number:
+
+```json
+{ "number": "+15551234567" }
+```
+
+Your endpoint returns the destination:
+
+```json
+{ "transferNumber": "+15559876543" }
+```
+
+Falls back to the static transfer number if the request fails.
+
+## Bulk / List Calling
+
+Call a list of contacts using a dedicated number.
+
+### Creating a List
+
+1. Upload a CSV at /contacts via Upload Contacts (a list is auto-created).
+2. Or create a list directly via Create List at /contacts.
+
+### Start List Calling
+
+Ensure numbers include country codes, then click Start List in the list detail page. Choose a workflow and phone number. Calls run sequentially in the background.
+
+### List Schedule
+
+For large lists, set a schedule to stop calling after a specified time and resume the next day. Update the schedule in the list detail page.
+
+Multiple numbers for list calling is in testing. Contact yiming@callcow.ai to participate.
+
+## Integration Guides
+
+### Embed Website Widget
+
+Two widget types are available:
+
+1. **Floating Widget** - Chat-style widget at the bottom right of the screen.
+2. **Inline Widget** - Embeddable in any website section.
+
+Click Embed on Website inside the workflow page to get the integration code. For custom widgets, book at https://callcow.ai/schedule-custom.
+
+### Zapier Integration
+
+1. Accept the invite at https://zapier.com/developer/public-invite/232727/45c3209dfedcd445fe42140ec0463703/
+2. Create a new Zap with Facebook Lead Ads, Google Lead Ads, or any lead form as the trigger.
+3. Pick "Create Workflow" as the CallCow action.
+4. Authorize OAuth and use your workflow ID from CallCow (found in workflow settings).
+5. Map fields for name, phone, and email.
+
+### Cal.com Integration
+
+1. Go to app.calcom.com settings.
+2. Create an API Key under API Keys in Settings.
+3. Set the key to never expire.
+4. Copy the key to CallCow.
+
+Remove the key on Cal.com to revoke access at any time.
+
+### Calendly Integration
+
+1. Go to calendly.com/integrations and find API and webhooks.
+2. Generate a new personal access token.
+3. Copy the token to CallCow.
+
+Revoke the token on Calendly to disconnect at any time.
+
+### TidyCal Integration
+
+1. Go to tidycal.com/integrations/oauth.
+2. Generate and copy the API key.
+3. Add the key and select the event in CallCow.
+
+Note: Paid bookings cannot be booked via API and are excluded.
+
+### Trafft Integration
+
+1. In your Trafft admin panel, go to Account Settings > Features and Integrations.
+2. Search for API and click Set up.
+3. Copy the API key and secrets to CallCow.
+
+You also need a Service ID. Create different integrations for different services if using multiple workflows. Bookings are assigned to the first available employee.
+
+### Monday CRM Integration
+
+1. Go to Developer Settings > API token in Monday.
+2. Copy the API token.
+3. Creating fields for call log and meeting start time is recommended for automation.
+4. Extra call context can be passed to workflows.
+
+#### Trigger Calls on Row Creation
+
+1. Create a Monday CRM integration in the Integrations tab.
+2. Copy the webhook link from Run Workflow in your workflow.
+3. In Monday, go to Integrate > More Integrations > Webhooks.
+4. Create a "When an item is created, send a webhook" automation with the copied URL.
+
+Monday API key is only used to fetch new rows and update call status. CallCow never stores CRM data.
+
+## Organization / White Labeling
+
+For agencies managing multiple clients:
+
+1. Go to /settings.
+2. Under Parent Organization, select the agency organization on a free account.
+3. Link the parent organization for billing.
+
+All usage is tied to one account. Analytics and stats can be shared per client without exposing other clients' data.
+
+## API Reference
+
+Base URL: `https://www.callcow.ai/api`
+
+Authentication: Bearer token in the Authorization header.
+
+### POST /call - Trigger AI Phone Call
+
+Initiates an AI phone call workflow to the specified recipient.
+
+**Request Body (JSON):**
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| recipient_phone | string | Yes | Phone number in E.164 format (e.g., +14155552671) |
+| workflow_id | string | Yes | ID of the workflow to execute |
+| recipient_name | string | No | Name of the call recipient |
+| recipient_email | string | No | Email of the recipient (recommended for meeting booking calls) |
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Thanks! Our AI agent will call you shortly."
+}
+```
+
+**Error Responses:**
+
+- 404: Workflow not found
+- 503: Phone number service unavailable
+
+OpenAPI spec: https://docs.callcow.ai/api-reference/openapi.json
+
+## Webhooks
+
+Webhooks send real-time POST notifications when calls complete.
+
+### Setup
+
+Create a webhook in the Integration tab, then update your custom workflow metadata to use it.
+
+### Payload Format
+
+```json
+{
+  "call_id": "e0f4c895-e3ea-416a-a98a-578e82868473",
+  "workflow_id": "008bda4d-b467-4f55-a8ed-803b3d1d69d5",
+  "workflow_name": "calendly test (Copy)",
+  "phone_number_from": "browser",
+  "phone_number_to": "browser",
+  "call_status": "not_picked_up",
+  "call_summary": "User and assistant exchange greetings.",
+  "messages": [
+    { "role": "user", "content": "Hi" },
+    { "role": "assistant", "content": "Hello. My name is Alex." }
+  ],
+  "context": "{\"name\": \"John Doe\", \"email\": \"john@example.com\", \"number\": \"+14165551234\"}",
+  "form_fills": [
+    {
+      "title": "Form Title",
+      "values": {
+        "Email": "john@example.com",
+        "Phone Number": "+14165551234",
+        "Options": null
+      }
+    }
+  ],
+  "created_at": "2026-01-30T14:48:36.371886"
+}
+```
+
+### Field Reference
+
+| Field | Type | Description |
+|---|---|---|
+| call_id | string | Unique identifier for the call |
+| workflow_id | string | ID of the workflow that handled the call |
+| workflow_name | string | Name of the workflow |
+| phone_number_from | string | Originating phone number or "browser" |
+| phone_number_to | string | Destination phone number or "browser" |
+| call_status | string | Status: success, not_picked_up, etc. |
+| call_summary | string | AI-generated summary of the call |
+| messages | array | Full conversation transcript with role and content |
+| context | string | JSON string with custom context data (name, email, phone) |
+| form_fills | array | Forms filled during the call (title and values). Only included if forms are in the workflow. |
+| created_at | string | ISO 8601 timestamp |
+
+### Handling Webhooks
+
+- Accept POST requests with JSON content.
+- Respond with a 2xx status code.
+- Process asynchronously if needed.
+- Implement idempotency using call_id for duplicate handling.
+- Test with browser calls immediately after setup.
+
+### Example Handler (Node.js)
+
+```javascript
+app.post('/webhook/callcow', (req, res) => {
+  const payload = req.body;
+  console.log('Call completed:', payload.call_id);
+  console.log('Status:', payload.call_status);
+  console.log('Summary:', payload.call_summary);
+  const context = JSON.parse(payload.context);
+  console.log('Caller:', context.name);
+  res.status(200).send('OK');
+});
+```
