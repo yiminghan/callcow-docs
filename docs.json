@@ -15,7 +15,7 @@
         "groups": [
           {
             "group": "Getting started",
-            "pages": ["index", "clone-voice/voice-clone"]
+            "pages": ["index", "getting-started"]
           },
           {
             "group": "Workflow Guides",
@@ -31,7 +31,12 @@
           },
           {
             "group": "Working With Phone Numbers",
-            "pages": ["phone-number-guide", "voicemail-transfer/voicemail-transfer", "transfer-to-human/transfer-to-human"]
+            "pages": [
+              "phone-number-guide", 
+              "voicemail-transfer/voicemail-transfer", 
+              "transfer-to-human/transfer-to-human",
+              "clone-voice/voice-clone"
+            ]
           },
           {
             "group": "Bluk Calls",
