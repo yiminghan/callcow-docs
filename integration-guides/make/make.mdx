@@ -1,0 +1,137 @@
+---
+title: "Make.com"
+description: "Connect CallCow to Make.com for bidirectional workflow automation"
+---
+
+## Overview
+
+Integrate CallCow with [Make.com](https://www.make.com) to:
+
+- **Make.com → CallCow**: Trigger AI phone calls from Make.com scenarios (e.g., when a form is submitted, a CRM record is created, etc.)
+- **CallCow → Make.com**: Send post-call data (summary, form fills, recording) to Make.com for further processing
+
+## Prerequisites
+
+1. A CallCow account with at least one workflow
+2. A Make.com account
+3. A CallCow API key (generate from **Settings → API Keys**)
+
+## Make.com → CallCow: Trigger Calls
+
+Use Make.com's HTTP module to call the CallCow API and trigger AI phone calls.
+
+### Step 1: Generate an API Key
+
+1. Go to [Settings → API Keys](https://www.callcow.ai/settings?tab=api-keys) in your CallCow dashboard
+2. Click **Create API Key** and give it a name (e.g., "Make.com")
+3. Copy the key immediately — you won't be able to see it again
+
+### Step 2: Get Your Workflow ID
+
+You can find your workflow ID in one of two ways:
+- From your CallCow dashboard URL when editing a workflow
+- Via the [List Workflows API endpoint](/api-reference/endpoint/workflows)
+
+### Step 3: Set Up the HTTP Module in Make.com
+
+1. In your Make.com scenario, add an **HTTP → Make a request** module
+2. Configure it as follows:
+
+| Setting | Value |
+|---------|-------|
+| **URL** | `https://www.callcow.ai/api/call` |
+| **Method** | `POST` |
+| **Headers** | `Authorization: Bearer ck_live_...` |
+| **Body type** | JSON |
+
+3. Set the JSON body:
+
+```json
+{
+  "workflow_id": "your-workflow-id",
+  "recipient_phone": "+14155552671",
+  "recipient_name": "John Doe",
+  "recipient_email": "john@example.com",
+  "recipient_context": "Additional context for the AI",
+  "idempotency_key": "unique-key-for-this-call"
+}
+```
+
+<Tip>
+  Use the `idempotency_key` field to prevent duplicate calls if Make.com retries the request. Use a unique identifier from your trigger (e.g., form submission ID, CRM record ID).
+</Tip>
+
+### Step 4: Test
+
+Run your scenario and verify the call is triggered. You should receive a response:
+
+```json
+{
+  "success": true,
+  "message": "Thanks! Our AI agent will call you shortly."
+}
+```
+
+## CallCow → Make.com: Receive Post-Call Data
+
+Use CallCow's built-in webhook integration to send post-call data to Make.com.
+
+### Step 1: Create a Make.com Webhook
+
+1. In your Make.com scenario, add a **Webhooks → Custom webhook** trigger
+2. Copy the webhook URL (it will look like `https://hook.make.com/...`)
+
+### Step 2: Configure the Webhook in CallCow
+
+1. Go to your CallCow dashboard and navigate to **Integrations**
+2. Create a new **Webhook** integration
+3. Paste the Make.com webhook URL
+4. Attach the webhook integration to your workflow
+
+### Step 3: Test
+
+Trigger a call (via the dashboard, API, or phone). When the call completes, CallCow will send a POST request to your Make.com webhook with the call data:
+
+```json
+{
+  "call_id": "e0f4c895-e3ea-416a-a98a-578e82868473",
+  "workflow_id": "008bda4d-b467-4f55-a8ed-803b3d1d69d5",
+  "workflow_name": "Customer Support",
+  "phone_number_from": "+14155552671",
+  "phone_number_to": "+14155559999",
+  "call_status": "success",
+  "call_summary": "Customer asked about pricing and was provided plan details.",
+  "messages": [...],
+  "form_fills": [...],
+  "created_at": "2026-03-17T14:48:36.371886"
+}
+```
+
+See the [Webhooks documentation](/webhooks/webhook) for the full payload reference.
+
+## Example Scenarios
+
+Here are some common Make.com + CallCow scenarios:
+
+| Trigger | Action |
+|---------|--------|
+| New HubSpot contact | Trigger a welcome call via CallCow |
+| Google Form submission | Trigger a follow-up call with form data as context |
+| CallCow call completed | Create a HubSpot note with call summary |
+| CallCow call completed | Send a Slack notification with call results |
+| CallCow form fill completed | Add row to Google Sheets |
+| New Calendly booking | Trigger a confirmation call via CallCow |
+
+## Rate Limits
+
+The CallCow API is rate-limited to **60 requests per minute** per organization. If you hit the limit, Make.com will receive a `429` response with a `Retry-After` header. Configure Make.com's error handling to retry after the specified delay.
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| `401 Unauthorized` | Check that your API key is correct and hasn't been revoked |
+| `403 Forbidden` | The workflow belongs to a different organization than the API key |
+| `404 Workflow not found` | Verify the workflow ID exists and hasn't been deleted |
+| `429 Too Many Requests` | You've hit the rate limit — add a delay between requests |
+| Webhook not firing | Ensure the webhook integration is attached to your workflow |

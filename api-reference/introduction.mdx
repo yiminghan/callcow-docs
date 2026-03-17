@@ -6,12 +6,39 @@ title: "Introduction"
 
 Here you can explore how to use voice workflow automations with our API.
 
-Currently we just offer simple API to trigger workflows. For more custom integrations and workflows, [book a meeting](https://www.callcow.ai/login-beta) with us.
+## Authentication
 
-<Card
-  title="Workflow Endpoints"
-  icon="workflow"
-  href="/api-reference/endpoint/call"
->
-  Trigger Workflow Via API
-</Card>
+All API requests require an API key passed via the `Authorization` header:
+
+```
+Authorization: Bearer ck_live_...
+```
+
+Generate API keys from **Settings → API Keys** in your [CallCow dashboard](https://www.callcow.ai/settings?tab=api-keys).
+
+<Warning>
+  API keys are only shown once at creation time. Copy and store your key securely — you won't be able to see it again.
+</Warning>
+
+## Rate Limits
+
+API requests are rate-limited to **60 requests per minute** per organization. If you exceed the limit, you'll receive a `429` response with a `Retry-After` header indicating when you can retry.
+
+## Endpoints
+
+<CardGroup cols={2}>
+  <Card
+    title="Trigger Call"
+    icon="phone"
+    href="/api-reference/endpoint/call"
+  >
+    Trigger an AI phone call workflow via API
+  </Card>
+  <Card
+    title="List Workflows"
+    icon="list"
+    href="/api-reference/endpoint/workflows"
+  >
+    List all workflows in your organization
+  </Card>
+</CardGroup>

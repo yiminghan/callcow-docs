@@ -12,8 +12,9 @@
     "/call": {
       "post": {
         "summary": "Trigger AI Phone Call",
-        "description": "Initiates an AI phone call workflow to the specified recipient",
+        "description": "Initiates an AI phone call workflow to the specified recipient. Requires an API key for authentication.",
         "operationId": "triggerCall",
+        "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
@@ -35,6 +36,36 @@
               }
             }
           },
+          "400": {
+            "description": "Validation failed or invalid phone number",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden — workflow belongs to a different organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Workflow not found",
             "content": {
@@ -45,8 +76,70 @@
               }
             }
           },
-          "503": {
-            "description": "Phone number service unavailable",
+          "429": {
+            "description": "Rate limit exceeded (60 requests/minute per organization)",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds until rate limit resets",
+                "schema": { "type": "integer" }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to initiate call",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/workflows": {
+      "get": {
+        "summary": "List Workflows",
+        "description": "Returns all non-deleted workflows for the authenticated organization.",
+        "operationId": "listWorkflows",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "List of workflows",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListWorkflowsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds until rate limit resets",
+                "schema": { "type": "integer" }
+              }
+            },
             "content": {
               "application/json": {
                 "schema": {
@@ -63,7 +156,8 @@
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",
-        "scheme": "bearer"
+        "scheme": "bearer",
+        "description": "API key generated from Settings → API Keys. Format: `ck_live_...`"
       }
     },
     "schemas": {
@@ -79,7 +173,7 @@
           "recipient_email": {
             "type": "string",
             "format": "email",
-            "description": "Email address of the call recipient.  Email is recommended for meeting booking calls.",
+            "description": "Email address of the call recipient. Recommended for meeting booking calls.",
             "example": "john@example.com"
           },
           "recipient_phone": {
@@ -87,10 +181,20 @@
             "description": "Phone number of the call recipient in E.164 format",
             "example": "+14155552671"
           },
+          "recipient_context": {
+            "type": "string",
+            "description": "Additional context to provide to the AI agent during the call",
+            "example": "Customer interested in premium plan"
+          },
           "workflow_id": {
             "type": "string",
-            "description": "ID of the workflow to execute",
+            "description": "ID of the workflow to execute. Get workflow IDs from the List Workflows endpoint or your dashboard.",
             "example": "wf_abc123xyz"
+          },
+          "idempotency_key": {
+            "type": "string",
+            "description": "Optional unique key to prevent duplicate calls on retries. Scoped to your organization with a 5-minute TTL.",
+            "example": "order-12345-call"
           }
         }
       },
@@ -107,16 +211,48 @@
           }
         }
       },
+      "ListWorkflowsResponse": {
+        "type": "object",
+        "properties": {
+          "workflows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Workflow ID",
+                  "example": "b8f40b44-3b7a-425b-a2ae-1327471b0410"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Workflow name",
+                  "example": "Customer Support Workflow"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Validation failed"
+          },
+          "details": {
+            "type": "object",
+            "description": "Zod validation error details"
+          }
+        }
+      },
       "Error": {
         "type": "object",
         "properties": {
           "error": {
             "type": "string",
             "description": "Error message"
-          },
-          "success": {
-            "type": "boolean",
-            "example": false
           }
         }
       }

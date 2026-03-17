@@ -2,3 +2,15 @@
 title: "Trigger Call"
 openapi: "POST /call"
 ---
+
+## Idempotency
+
+To prevent duplicate calls from retries, you can pass an optional `idempotency_key` in the request body. If the same key is sent within a 5-minute window, the API returns the cached response without creating a new call.
+
+```json
+{
+  "workflow_id": "wf_abc123xyz",
+  "recipient_phone": "+14155552671",
+  "idempotency_key": "order-12345-call"
+}
+```

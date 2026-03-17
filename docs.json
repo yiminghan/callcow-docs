@@ -51,7 +51,8 @@
               "integration-guides/calendly/calendly",
               "integration-guides/tidycal/tidycal",
               "integration-guides/trafft/trafft",
-              "integration-guides/monday/monday"
+              "integration-guides/monday/monday",
+              "integration-guides/make/make"
             ]
           },
           {
@@ -70,8 +71,11 @@
             "pages": ["api-reference/introduction"]
           },
           {
-            "group": "Trigger Workflow",
-            "pages": ["api-reference/endpoint/call"]
+            "group": "Endpoints",
+            "pages": [
+              "api-reference/endpoint/call",
+              "api-reference/endpoint/workflows"
+            ]
           },
           {
             "group": "Webhooks",
