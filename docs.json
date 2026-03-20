@@ -32,7 +32,8 @@
           {
             "group": "Working With Phone Numbers",
             "pages": [
-              "phone-number-guide", 
+              "phone-number-guide",
+              "twilio-business-profile",
               "voicemail-transfer/voicemail-transfer", 
               "transfer-to-human/transfer-to-human",
               "clone-voice/voice-clone"
