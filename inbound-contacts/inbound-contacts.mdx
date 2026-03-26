@@ -40,3 +40,15 @@ Each thread shows the full message history between you and the contact on a spec
 ### Sending Messages
 
 Type a message in the thread view and click send. Messages are delivered via Twilio using the thread's "from" number.
+
+## Inbound SMS Contacts
+
+When someone sends an SMS to a phone number that is assigned to a workflow, an inbound contact is automatically created for that person.
+
+- **Automatic creation** — The contact is created as soon as the first SMS is received from a new phone number.
+- **Preferred number** — The phone number they texted is automatically set as their preferred number.
+- **Workflow trigger** — If the phone number is assigned to an SMS-triggered workflow, the workflow will run automatically for the new contact.
+
+This means you do not need to manually create contacts for people who text your numbers. Simply assign a phone number to your workflow, enable SMS, and any incoming text message will create the contact and trigger the workflow.
+
+For instructions on enabling SMS on a phone number, see the [Phone Number Guide](/phone-number-guide#setting-up-sms).
