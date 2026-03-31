@@ -105,6 +105,112 @@
         }
       }
     },
+    "/call-prompt": {
+      "post": {
+        "summary": "Call with Prompt",
+        "description": "Create and trigger an AI phone call from a natural language prompt. Generates a workflow, initiates the call, and optionally delivers results to a callback URL.",
+        "operationId": "callWithPrompt",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CallPromptRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Call successfully created and triggered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CallPromptSuccess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed (invalid phone, SSRF callback URL, missing prompt)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Workflow already used (single-use enforcement)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Workflow expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Could not generate workflow from prompt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (60 requests/minute per organization)",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds until rate limit resets",
+                "schema": { "type": "integer" }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to initiate call",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/workflows": {
       "get": {
         "summary": "List Workflows",
@@ -231,6 +337,58 @@
                 }
               }
             }
+          }
+        }
+      },
+      "CallPromptRequest": {
+        "type": "object",
+        "required": ["prompt", "recipient_phone"],
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Natural language description of the call task. The system generates an AI workflow from this prompt.",
+            "example": "Book a reservation at Friday 7pm for Josh for 2"
+          },
+          "recipient_phone": {
+            "type": "string",
+            "description": "Phone number of the call recipient in E.164 format",
+            "example": "+14155552671"
+          },
+          "callback_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "HTTPS URL to receive call results when the call completes or fails. Must not point to private/reserved IP ranges.",
+            "example": "https://agent.example.com/results"
+          },
+          "callback_secret": {
+            "type": "string",
+            "description": "Optional bearer token included in the Authorization header of callback requests",
+            "example": "my-secret-token"
+          },
+          "idempotency_key": {
+            "type": "string",
+            "description": "Optional unique key to prevent duplicate calls on retries. Scoped to your organization with a 5-minute TTL.",
+            "example": "agent-task-12345"
+          }
+        }
+      },
+      "CallPromptSuccess": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "workflow_id": {
+            "type": "string",
+            "description": "ID of the generated workflow",
+            "example": "b8f40b44-3b7a-425b-a2ae-1327471b0410"
+          },
+          "call_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "ID of the initiated call, if available",
+            "example": "c9e50c55-4c8b-536c-b3bf-2438582c1521"
           }
         }
       },

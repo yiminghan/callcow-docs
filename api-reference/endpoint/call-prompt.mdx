@@ -1,0 +1,57 @@
+---
+title: "Call with Prompt"
+openapi: "POST /call-prompt"
+---
+
+## Overview
+
+Create and trigger an AI phone call from a natural language prompt in a single request. The system generates a workflow from your prompt, initiates the call, and optionally delivers results to a callback URL.
+
+This is ideal for agent-to-agent orchestration, where external agents can make calls without pre-creating workflows.
+
+## Callback
+
+If you provide a `callback_url`, the API will POST call results to that URL when the call completes **or fails** (including not picked up, busy, voicemail).
+
+Callback delivery is best-effort (single attempt, 30-second timeout). For guaranteed delivery, poll the call status as a fallback.
+
+### Callback payload
+
+```json
+{
+  "call_id": "abc-123",
+  "workflow_id": "def-456",
+  "call_status": "success",
+  "provider_status": "completed",
+  "call_summary": "Customer booked a reservation for Friday 7pm, party of 2.",
+  "messages": [],
+  "context": null,
+  "form_fills": [],
+  "created_at": "2026-03-30T12:00:00.000Z"
+}
+```
+
+If you provided a `callback_secret`, the callback request includes an `Authorization: Bearer <your_secret>` header.
+
+### Terminal statuses
+
+| `call_status` | `provider_status` | Meaning |
+|---|---|---|
+| `success` | `completed` | Call completed normally |
+| `not_picked_up` | `no-answer` | No one answered |
+| `not_picked_up` | `busy` | Line was busy |
+| `not_picked_up` | `failed` | Call failed (bad number, carrier error) |
+| `not_picked_up` | `canceled` | Call was canceled |
+| `voicemail` | `completed` | Went to voicemail |
+
+## Idempotency
+
+To prevent duplicate calls from retries, pass an optional `idempotency_key`. If the same key is sent within a 5-minute window, the API returns the cached response without creating a new call.
+
+```json
+{
+  "prompt": "Book a reservation at Friday 7pm for Josh for 2",
+  "recipient_phone": "+14155552671",
+  "idempotency_key": "agent-task-12345"
+}
+```

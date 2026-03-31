@@ -1,0 +1,134 @@
+---
+title: "Agent Calling"
+description: "Let AI agents make phone calls through CallCow with a single API request"
+---
+
+## Overview
+
+Agent calling lets external AI agents (Claude, GPT, n8n, Make, custom bots) make phone calls by sending a short natural language prompt. CallCow generates a call workflow from the prompt, makes the call, and delivers results to a callback URL.
+
+No workflow setup needed. One API call does everything.
+
+## Setup
+
+<Steps>
+  <Step title="Create a CallCow account">
+    Sign up at [callcow.ai](https://www.callcow.ai) and complete onboarding.
+  </Step>
+  <Step title="Connect a phone number">
+    Go to **Settings > Phone Numbers** and add a phone number. This is the number your AI agent will call from.
+  </Step>
+  <Step title="Generate an API key">
+    Go to **Settings > API Keys** and click **Create API Key**. Copy the key immediately -- it starts with `ck_live_` and is only shown once.
+  </Step>
+</Steps>
+
+## Making a call
+
+Send a POST request to `/api/call-prompt` with your prompt and the recipient's phone number:
+
+```bash
+curl -X POST https://www.callcow.ai/api/call-prompt \
+  -H "Authorization: Bearer ck_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Book a dinner reservation for Friday at 7pm, party of 2, under Josh",
+    "recipient_phone": "+14155551234"
+  }'
+```
+
+The API returns a `workflow_id` and `call_id`:
+
+```json
+{
+  "success": true,
+  "workflow_id": "abc-123",
+  "call_id": "def-456"
+}
+```
+
+The AI agent introduces itself as an AI assistant at the start of every call.
+
+## Writing good prompts
+
+Write prompts like you're briefing a human assistant. Include all the details they'd need.
+
+<CardGroup cols={2}>
+  <Card title="Good prompts" icon="check">
+    - "Book a dinner reservation at Olive Garden for Friday 7pm, party of 2,
+    under Josh Miller" - "Confirm Sarah Johnson's 3pm appointment tomorrow at
+    Dr. Smith's office" - "Ask about store hours and if they have size 10 Nike
+    Air Max in stock"
+  </Card>
+  <Card title="Bad prompts" icon="xmark">
+    - "Make a call" (too vague) - "Book something" (no details) - "Call them"
+    (who? about what?)
+  </Card>
+</CardGroup>
+
+**Tip:** Include who, what, when, where, and any specific details.
+
+## Getting call results
+
+Add a `callback_url` to your request to receive results when the call ends:
+
+```bash
+curl -X POST https://www.callcow.ai/api/call-prompt \
+  -H "Authorization: Bearer ck_live_YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Book a reservation for Friday 7pm, party of 2",
+    "recipient_phone": "+14155551234",
+    "callback_url": "https://your-server.com/callback",
+    "callback_secret": "my-secret-token"
+  }'
+```
+
+CallCow will POST results to your URL when the call completes **or fails**:
+
+```json
+{
+  "call_id": "def-456",
+  "workflow_id": "abc-123",
+  "call_status": "success",
+  "provider_status": "completed",
+  "call_summary": "Successfully booked a reservation for Friday 7pm, party of 2.",
+  "messages": [],
+  "form_fills": [],
+  "created_at": "2026-03-30T12:00:00.000Z"
+}
+```
+
+If you provided `callback_secret`, the request includes `Authorization: Bearer my-secret-token` so you can verify it came from CallCow.
+
+### Call statuses
+
+| `call_status`   | `provider_status` | What happened                           |
+| --------------- | ----------------- | --------------------------------------- |
+| `success`       | `completed`       | Call completed normally                 |
+| `not_picked_up` | `no-answer`       | No one answered                         |
+| `not_picked_up` | `busy`            | Line was busy                           |
+| `not_picked_up` | `failed`          | Call failed (bad number, carrier error) |
+| `voicemail`     | `completed`       | Went to voicemail                       |
+
+## Preventing duplicate calls
+
+Pass an `idempotency_key` to prevent duplicate calls if your agent retries:
+
+```json
+{
+  "prompt": "Book a reservation...",
+  "recipient_phone": "+14155551234",
+  "idempotency_key": "task-12345"
+}
+```
+
+Same key within 5 minutes returns the cached response without making a new call.
+
+## Rate limits
+
+60 requests per minute per organization. If you hit the limit, the API returns `429` with a `Retry-After` header.
+
+## Skill file for AI agents
+
+If your AI agent reads skill files or system prompts, point it to `AGENT_CALL_SKILL.md` in the CallCow repo for a machine-readable reference.
