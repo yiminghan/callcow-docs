@@ -131,4 +131,8 @@ Same key within 5 minutes returns the cached response without making a new call.
 
 ## Skill file for AI agents
 
-If your AI agent reads skill files or system prompts, point it to `AGENT_CALL_SKILL.md` in the CallCow repo for a machine-readable reference.
+If your AI agent reads skill files or system prompts, run
+
+```bash
+npx skills add https://github.com/yiminghan/callcow-skills --skill agent-call
+```
